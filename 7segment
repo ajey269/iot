@@ -1,0 +1,68 @@
+To display the current time on a 4-digit seven-segment display using a Raspberry Pi, you'll need to interface the display with the Raspberry Pi and write a Python script to control the display. Here's a breakdown of the process:
+
+**Hardware Requirements:**
+
+1. Raspberry Pi Model A/B/B+ [cite: 28, 29, 30, 31]
+
+2. 4-digit 7-segment display [cite: 28, 29, 30, 31]
+
+3. Jumper wires (Female to Female) [cite: 28, 29, 30, 31]
+
+**Software Requirements:**
+
+1. Raspbian Stretch OS [cite: 28, 29, 30, 31]
+
+2. Python 3 [cite: 37, 38, 39, 40, 41, 42, 43]
+
+**Steps:**
+
+1. **Connect the Display:** Connect the 4-digit seven-segment display to the Raspberry Pi's GPIO pins according to the following table:
+
+| TM1637 Board Pin | Function       | RPI Physical Pin | Raspberry Function |
+| :--------------- | :------------- | :--------------- | :---------------- |
+| GND              | Ground         | GND              | 14                |
+| VCC              | +5V Power      | 4                | 5V                |
+| DIO              | Data In        | 18               | GPIO 24           |
+| CLK              | Clock          | 16               | GPIO 23           |
+
+2. **Download the Python Script:** Download the script using the `wget` command:
+```bash
+pi@raspberrypi:~$ wget https://raspberrytips.nl/files/tm1637.py
+```
+
+3. **Write the Python Script:** Create a Python script (e.g., `clock.py`) to display the time:
+```python
+import sys
+import time
+import datetime
+import RPi.GPIO as GPIO
+import tm1637
+
+Display = tm1637.TM1637(23, 24, tm1637.BRIGHT_TYPICAL)
+Display.Clear()
+Display.SetBrightness(1)
+
+while (True):
+    now = datetime.datetime.now()
+    hour = now.hour
+    minute = now.minute
+    second = now.second
+    currenttime = [int(hour / 10), hour % 10, int(minute / 10), minute % 10]
+    Display.Show(currenttime)
+    Display.ShowDoublepoint(second % 2)
+    time.sleep(1)
+```
+
+4. **Save and Run the Script:** Save the script as `clock.py` and run it using the command `python3 clock.py`.
+
+**Explanation:**
+
+* The script initializes the 4-digit seven-segment display and sets the brightness.
+* It continuously retrieves the current time and displays it on the display.
+* The `ShowDoublepoint()` function controls the colon between the hours and minutes, making it blink every second.
+
+**Additional Notes:**
+
+* You can adjust the brightness of the display using the `SetBrightness()` function.
+* The script requires the `tm1637.py` script to work, so make sure both files are in the same folder.
+* For more advanced display functionalities, refer to the `tm1637.py` script and the documentation for the 4-digit seven-segment display module.
